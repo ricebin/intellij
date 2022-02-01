@@ -93,7 +93,7 @@ public class CcToolchainTest extends BazelIntellijAspectTest {
   private static List<TargetIdeInfo> findToolchainTarget(IntellijAspectTestFixture testFixture) {
     List<TargetIdeInfo> result = Lists.newArrayList();
     for (TargetIdeInfo target : testFixture.getTargetsList()) {
-      if (target.hasCToolchainIdeInfo()) {
+      if (target.hasCToolchainIdeInfo() && !target.getKindString().equals("cc_toolchain_alias")) {
         result.add(target);
       }
     }
