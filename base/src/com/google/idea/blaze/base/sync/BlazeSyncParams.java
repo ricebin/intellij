@@ -19,6 +19,7 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableSet;
 import com.google.idea.blaze.base.model.primitives.TargetExpression;
 import com.google.idea.blaze.base.model.primitives.WorkspacePath;
+import com.intellij.openapi.project.Project;
 import java.util.Collection;
 
 /** Parameters that control the sync. */
@@ -31,8 +32,6 @@ public abstract class BlazeSyncParams {
 
   /** A string describing what triggered the sync (e.g. on startup, auto-sync, etc.). */
   public abstract String syncOrigin();
-
-  public abstract BlazeBuildParams blazeBuildParams();
 
   public abstract boolean backgroundSync();
 
@@ -67,7 +66,13 @@ public abstract class BlazeSyncParams {
 
     public abstract Builder setSyncOrigin(String syncOrigin);
 
-    public abstract Builder setBlazeBuildParams(BlazeBuildParams value);
+    public Builder setBlazeBuildParamsFrom(BlazeSyncParams other) {
+      return this;
+    }
+
+    public Builder setProject(Project project) {
+      return this;
+    }
 
     public abstract Builder setBackgroundSync(boolean value);
 
@@ -107,7 +112,6 @@ public abstract class BlazeSyncParams {
         .setTitle(base.title())
         .setSyncMode(base.syncMode())
         .setSyncOrigin(base.syncOrigin())
-        .setBlazeBuildParams(base.blazeBuildParams())
         .setBackgroundSync(first.backgroundSync() && second.backgroundSync())
         .addTargetExpressions(first.targetExpressions())
         .addTargetExpressions(second.targetExpressions())

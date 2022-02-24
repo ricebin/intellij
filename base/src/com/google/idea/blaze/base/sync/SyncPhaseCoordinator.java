@@ -202,7 +202,7 @@ final class SyncPhaseCoordinator {
     if (syncParams.syncMode() == SyncMode.NO_BUILD) {
       return false;
     }
-    return syncParams.blazeBuildParams().blazeBinaryType().isRemote;
+    return Blaze.getBuildSystemProvider(project).getSyncBinaryType().isRemote;
   }
 
   ListenableFuture<Void> syncProject(BlazeSyncParams syncParams) {
@@ -245,7 +245,7 @@ final class SyncPhaseCoordinator {
                                   .setTitle("Filtering targets")
                                   .setSyncMode(SyncMode.PARTIAL)
                                   .setSyncOrigin(reason)
-                                  .setBlazeBuildParams(BlazeBuildParams.fromProject(project))
+                                  .setProject(project)
                                   .setBackgroundSync(true)
                                   .build();
                           BlazeSyncParams params = finalizeSyncParams(syncParams, context);
@@ -310,7 +310,7 @@ final class SyncPhaseCoordinator {
               childContext -> {
                 SyncProjectState projectState =
                     ProjectStateSyncTask.collectProjectState(
-                        project, params.blazeBuildParams(), context);
+                        project, BlazeBuildParams.fromProject(project), context);
                 if (projectState == null) {
                   return;
                 }
@@ -381,7 +381,8 @@ final class SyncPhaseCoordinator {
         return;
       }
       SyncProjectState projectState =
-          ProjectStateSyncTask.collectProjectState(project, params.blazeBuildParams(), context);
+          ProjectStateSyncTask.collectProjectState(
+              project, BlazeBuildParams.fromProject(project), context);
       BlazeSyncBuildResult buildResult =
           projectState != null
               ? BuildPhaseSyncTask.runBuildPhase(project, params, projectState, buildId, context)
@@ -577,7 +578,7 @@ final class SyncPhaseCoordinator {
           .setSyncMode(syncParams.syncMode())
           .setSyncTitle(syncParams.title())
           .setSyncOrigin(syncParams.syncOrigin())
-          .setSyncBinaryType(syncParams.blazeBuildParams().blazeBinaryType())
+          .setSyncBinaryType(Blaze.getBuildSystemProvider(project).getSyncBinaryType())
           .setSyncResult(syncResult)
           .setStartTime(startTime)
           .setBlazeExecTime(totalBlazeTime(stats.getCurrentTimedEvents()))
